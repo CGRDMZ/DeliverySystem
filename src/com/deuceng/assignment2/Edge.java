@@ -1,18 +1,22 @@
 package com.deuceng.assignment2;
 
-public class Node<T> {
+public class Edge<T> {
     private T source;
     private T dest;
     private int cap;
     private int usedCapacity;
     private boolean visited;
 
-    public Node(T source, T dest, int cap) {
+    public Edge(T source, T dest, int cap) {
         this.source = source;
         this.dest = dest;
         this.cap = cap;
         this.usedCapacity = 0;
         this.visited = false;
+    }
+
+    public int getResidualCap() {
+        return cap - usedCapacity;
     }
 
     public void increaseCapacity(int amount) {
@@ -68,5 +72,13 @@ public class Node<T> {
 
     public void setVisited(boolean visited) {
         this.visited = visited;
+    }
+
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "source=" + source +
+                ", dest=" + dest +
+                '}';
     }
 }

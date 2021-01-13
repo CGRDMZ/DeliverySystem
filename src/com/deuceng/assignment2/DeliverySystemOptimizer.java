@@ -26,12 +26,12 @@ public class DeliverySystemOptimizer {
                 g.addEdges(parsedLine[0], parsedLine[1], Integer.parseInt(parsedLine[2]));
             }
             System.out.println(g.toString());
-            String s = "BF";
-            String d = "BK";
+
+            String s = "B";
+            String d = "A";
 
             System.out.println(g.findMaxFlow(s, d));
-            g.printBottlenecks(s, d);
-            g.getAvailableIncrement(s, d);
+            g.printBottlenecksAndAmountOfIncrement(s, d);
         } catch (Exception e) {
             e.printStackTrace();
         }
