@@ -24,10 +24,14 @@ public class DeliverySystemOptimizer {
                 String line = sc.nextLine();
                 String[] parsedLine = line.trim().split("\\s+");// regex for capturing the whitespaces
                 g.addEdges(parsedLine[0], parsedLine[1], Integer.parseInt(parsedLine[2]));
-
             }
             System.out.println(g.toString());
-            g.findMaxFlow("A", "C");
+            String s = "BF";
+            String d = "BK";
+
+            System.out.println(g.findMaxFlow(s, d));
+            g.printBottlenecks(s, d);
+            g.getAvailableIncrement(s, d);
         } catch (Exception e) {
             e.printStackTrace();
         }

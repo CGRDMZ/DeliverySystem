@@ -9,11 +9,14 @@ public class Graph<T> {
     // i have used this website as a reference
     // edges are kept in a linked list and every edge has a vertex and weight property.
     private HashMap<T, LinkedList<Node<T>>> vertexMap;
-    HashMap<T, T> parent;
+    private HashMap<T, T> parent;
+    private HashMap<T, Boolean> isVisited;
+    private LinkedList<Node<T>> bottlenecks;
 
     public Graph() {
         this.vertexMap = new HashMap<T, LinkedList<Node<T>>>();
         this.parent = new HashMap<T, T>();
+        this.isVisited = new HashMap<T, Boolean>();
     }
 
 
@@ -27,6 +30,16 @@ public class Graph<T> {
         }
         if (!vertexMap.containsKey(dest)) {
             addVertex(dest);
+        }
+
+        if (vertexMap.containsKey(src)) {
+            for (Node<T> neighbour :
+                    vertexMap.get(src)) {
+                if (neighbour.getSource().equals(src) && neighbour.getDest().equals(dest)) {
+                    neighbour.increaseCapacity(weight);
+                    System.out.println("increased capacity");
+                }
+            }
         }
 
         // we add only one edge from src to dest because we need a one-directional graph.
@@ -59,8 +72,9 @@ public class Graph<T> {
     }
 
     public boolean breadthFirstSearch(T start, T destination) {
+        parent = new HashMap<T, T>();
+        isVisited = new HashMap<T, Boolean>();
 
-        HashMap<T, Boolean> isVisited = new HashMap<T, Boolean>();
         for (T vertex :
                 vertexMap.keySet()) {
             isVisited.put(vertex, false);
@@ -80,10 +94,9 @@ public class Graph<T> {
                     isVisited.put((T) neighbour.getDest(), true);
                     parent.put((T) neighbour.getDest(), currentVertex);
                 }
+
             }
-
         }
-
         return isVisited.get(destination);
     }
 
@@ -94,10 +107,12 @@ public class Graph<T> {
     // * https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm
     // * https://www.hackerearth.com/practice/algorithms/graphs/maximum-flow/tutorial/
     public int findMaxFlow(T start, T dest) {
+        if (!vertexMap.containsKey(start) || !vertexMap.containsKey(dest)) return -1;
+        bottlenecks = new LinkedList<Node<T>>();
         int maximumFlow = 0;
+        resetEdges();
         while (breadthFirstSearch(start, dest)) {
             int pathFlow = Integer.MAX_VALUE;
-
 
             Node<T> bottleneck = null;
             // find the minimum node
@@ -109,7 +124,7 @@ public class Graph<T> {
                         vertexMap.get(parentVertex)) {
                     if (edgeNode.getDest().equals(currentVertex)) {
                         edgeBetween = edgeNode;
-                        if (pathFlow > edgeBetween.getCap()) {
+                        if (bottleneck == null || bottleneck.getCap() > edgeBetween.getCap()) {
                             bottleneck = edgeBetween;
                         }
                         pathFlow = Math.min(pathFlow, edgeBetween.getCap() - edgeBetween.getUsedCapacity());
@@ -118,6 +133,9 @@ public class Graph<T> {
 
                 currentVertex = parent.get(currentVertex);
             }
+
+
+            bottlenecks.add(bottleneck);
 
 
             // set the used capacity of all edges in the path to bottleneck capacity.
@@ -135,37 +153,73 @@ public class Graph<T> {
 
                 currentVertex = parent.get(currentVertex);
             }
-
-            System.out.println("source: " + bottleneck.getSource() + " dest: " + bottleneck.getDest());
+//
             maximumFlow += pathFlow;
         }
-        System.out.println(maximumFlow);
+
         return maximumFlow;
     }
 
-    public void findBottlenecks(T start, T dest) {
-        breadthFirstSearch(start, dest);
-        int pathFlow = Integer.MAX_VALUE;
-        Node<T> bottleneck = null;
-        // find the minimum node
-        T currentVertex = dest;
-        while (!currentVertex.equals(start)) {
-            T parentVertex = parent.get(currentVertex);
-            Node edgeBetween = null;
-            for (Node edgeNode :
-                    vertexMap.get(parentVertex)) {
-                if (edgeNode.getDest().equals(currentVertex)) {
-                    edgeBetween = edgeNode;
-                    pathFlow = Math.min(pathFlow, edgeBetween.getCap() - edgeBetween.getUsedCapacity());
-                    if (Math.min(pathFlow, edgeBetween.getCap() - edgeBetween.getUsedCapacity()) == edgeBetween.getCap() - edgeBetween.getUsedCapacity()) {
-                        bottleneck = edgeBetween;
-                    }
-                }
-            }
-
-            currentVertex = parent.get(currentVertex);
+    public void printBottlenecks(T start, T dest) {
+        LinkedList<Node<T>> bottleneckList = new LinkedList<Node<T>>();
+        for (Node<T> bottleneck :
+                bottlenecks) {
+            bottleneckList.add(bottleneck);
         }
-        System.out.println("source: " + bottleneck.getSource() + " dest: " + bottleneck.getDest());
+        for (Node bottleneck :
+                bottleneckList) {
+            if (breadthFirstSearch((T) bottleneck.getDest(), dest)) {
+                System.out.println("source: " + bottleneck.getSource() + " dest: " + bottleneck.getDest());
+            }
+        }
+    }
+
+    public void getAvailableIncrement(T start, T dest) {
+
+        LinkedList<Node<T>> bottleneckList = new LinkedList<Node<T>>();
+        for (Node<T> bottleneck :
+                bottlenecks) {
+            bottleneckList.add(bottleneck);
+        }
+
+        for (Node bottleneck :
+                bottleneckList) {
+
+        }
+    }
+    //        for (Node<T> bottleneck :
+//                bottlenecks) {
+//            bottleneckList.add(bottleneck);
+//        }
+//
+//        for (Node bottleneck :
+//                bottleneckList) {
+//            int previousFlow = findMaxFlow(start, dest);
+//            bottleneck.increaseCapacity(10);
+//            int increasedFlow = findMaxFlow(start, dest);
+//            int incrementCounter = 10;
+//            while (previousFlow < increasedFlow) {
+//                previousFlow = findMaxFlow(start, dest);
+//                bottleneck.increaseCapacity(10);
+//                increasedFlow = findMaxFlow(start, dest);
+//                incrementCounter+=10;
+//            }
+//            bottleneck.increaseCapacity(-incrementCounter);
+//            System.out.println(incrementCounter + " for: " + "source: " + bottleneck.getSource() + " dest: " + bottleneck.getDest());
+
+
+    private void resetEdges() {
+        for (LinkedList<Node<T>> edges :
+                vertexMap.values()) {
+            for (Node<T> edge :
+                    edges) {
+                edge.resetUsedCapacity();
+            }
+        }
+    }
+
+    private int[] getAdjMatrix(HashMap adjList) {
+        return null;
     }
 
 

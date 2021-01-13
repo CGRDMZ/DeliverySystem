@@ -3,6 +3,6 @@ package com.deuceng.assignment2;
 public class Main {
 
     public static void main(String[] args) {
-        new DeliverySystemOptimizer("./graph_test.txt");
+        new DeliverySystemOptimizer("./graph.txt");
     }
 }

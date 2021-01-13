@@ -15,6 +15,14 @@ public class Node<T> {
         this.visited = false;
     }
 
+    public void increaseCapacity(int amount) {
+        this.cap += amount;
+    }
+
+    public void resetUsedCapacity() {
+        this.usedCapacity = 0;
+    }
+
     public boolean hasSpace() {
         if (cap - usedCapacity == 0) {
             return false;
