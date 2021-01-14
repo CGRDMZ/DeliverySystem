@@ -27,8 +27,8 @@ public class DeliverySystemOptimizer {
             }
             System.out.println(g.toString());
 
-            String s = "B";
-            String d = "A";
+            String s = "A";
+            String d = "D";
 
             System.out.println(g.findMaxFlow(s, d));
             g.printBottlenecksAndAmountOfIncrement(s, d);

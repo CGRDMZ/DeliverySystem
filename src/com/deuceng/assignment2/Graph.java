@@ -165,25 +165,27 @@ public class Graph<T> {
     }
 
     public void printBottlenecksAndAmountOfIncrement(T start, T dest) {
+        resetEdges();
+        findMaxFlow(start, dest);
         LinkedList<Edge<T>> edgeList = new LinkedList<Edge<T>>();
         if (start.equals(dest)) return;
-//        for (LinkedList<Edge<T>> edges :
-//                vertexMap.values()) {
-//            edgeList.addAll(edges);
+        for (LinkedList<Edge<T>> edges :
+                vertexMap.values()) {
+            edgeList.addAll(edges);
+        }
+//        for (Edge edge :
+//                bottlenecks) {
+//            edgeList.add(edge);
 //        }
         for (Edge edge :
-                bottlenecks) {
-            edgeList.add(edge);
-        }
-        for (Edge bottleneck :
                 edgeList) {
-            boolean startToBottleneck = breadthFirstSearch(start, (T) bottleneck.getSource());
-            Edge bottleneck1 = findBottleneckEdge(parent, start, (T) bottleneck.getSource());
+            boolean startToBottleneck = breadthFirstSearch(start, (T) edge.getSource());
+            Edge bottleneck1 = findBottleneckEdge(parent, start, (T) edge.getSource());
 
-            boolean bottleneckToEnd = breadthFirstSearch((T) bottleneck.getDest(), dest);
-            Edge bottleneck2 = findBottleneckEdge(parent, (T) bottleneck.getDest(), dest);
+            boolean bottleneckToEnd = breadthFirstSearch((T) edge.getDest(), dest);
+            Edge bottleneck2 = findBottleneckEdge(parent, (T) edge.getDest(), dest);
 
-            if (!bottleneck.hasSpace() && bottleneckToEnd && startToBottleneck) {
+            if (!edge.hasSpace() && bottleneckToEnd && startToBottleneck) {
                 int neededIncrement = -1;
                 if (bottleneck1 != null && bottleneck2 == null) {
                     neededIncrement = bottleneck1.getResidualCap();
@@ -192,7 +194,7 @@ public class Graph<T> {
                 } else if (bottleneck1 != null && bottleneck2 != null) {
                     neededIncrement = Math.min(bottleneck1.getResidualCap(), bottleneck2.getResidualCap());
                 }
-                System.out.println("source: " + bottleneck.getSource() + " dest: " + bottleneck.getDest() + " increment: " + neededIncrement);
+                System.out.println("source: " + edge.getSource() + " dest: " + edge.getDest() + " increment: " + neededIncrement);
             }
         }
     }
@@ -235,7 +237,7 @@ public class Graph<T> {
     }
 
     private Edge findBottleneckEdge(HashMap vertices, T start, T end) {
-        if (start.equals(end)) return null;
+//        if (start.equals(end)) return null;
         T currentVertex = end;
         Edge bottleneck = null;
         while (!currentVertex.equals(start)) {
@@ -246,7 +248,7 @@ public class Graph<T> {
                     vertexMap.get(parentVertex)) {
                 if (edge.getDest().equals(currentVertex)) {
                     edgeBetween = edge;
-                    if (bottleneck == null || bottleneck.getResidualCap() < edgeBetween.getResidualCap()) {
+                    if (bottleneck == null || bottleneck.getResidualCap() > edgeBetween.getResidualCap()) {
                         bottleneck = edgeBetween;
                     }
                 }
