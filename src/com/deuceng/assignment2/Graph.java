@@ -169,14 +169,15 @@ public class Graph<T> {
         findMaxFlow(start, dest);
         LinkedList<Edge<T>> edgeList = new LinkedList<Edge<T>>();
         if (start.equals(dest)) return;
-        for (LinkedList<Edge<T>> edges :
-                vertexMap.values()) {
-            edgeList.addAll(edges);
-        }
-//        for (Edge edge :
-//                bottlenecks) {
-//            edgeList.add(edge);
+//        for (LinkedList<Edge<T>> edges :
+//                vertexMap.values()) {
+//            edgeList.addAll(edges);
 //        }
+        if (bottlenecks == null) return;
+        for (Edge edge :
+                bottlenecks) {
+            edgeList.add(edge);
+        }
         for (Edge edge :
                 edgeList) {
             boolean startToBottleneck = breadthFirstSearch(start, (T) edge.getSource());
