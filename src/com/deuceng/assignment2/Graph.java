@@ -43,17 +43,11 @@ public class Graph<T> {
         }
 
         // we add only one edge from src to dest because we need a one-directional graph.
-//        if (vertexMap.get(src).indexOf(dest) == -1) {
-//            vertexMap.get(src).add(new Edge<T>(dest, weight));
-//            return;
-//        }
+        // src is presenting the parent node.
         Edge edge = new Edge<T>(src, dest, weight);
         vertexMap.get(src).add(edge);
     }
 
-    public LinkedList<Edge<T>> getEdges(T vertex) {
-        return vertexMap.get(vertex);
-    }
 
 
     @Override
@@ -71,6 +65,8 @@ public class Graph<T> {
         return (builder.toString());
     }
 
+    // finds if the destination vertex is reachable from start vertex.
+    // also finds an augmenting path.
     public boolean breadthFirstSearch(T start, T destination) {
 
         if (start.equals(destination)) return true;
@@ -138,8 +134,10 @@ public class Graph<T> {
                 currentVertex = parent.get(currentVertex);
             }
 
-
-            bottlenecks.add(bottleneck);
+            // we store the bottleneck for later use.
+            if (!bottlenecks.contains(bottleneck)) {
+                bottlenecks.add(bottleneck);
+            }
 
 
             // set the used capacity of all edges in the path to bottleneck capacity.
@@ -167,26 +165,20 @@ public class Graph<T> {
     public void printBottlenecksAndAmountOfIncrement(T start, T dest) {
         resetEdges();
         findMaxFlow(start, dest);
-        LinkedList<Edge<T>> edgeList = new LinkedList<Edge<T>>();
         if (start.equals(dest)) return;
-//        for (LinkedList<Edge<T>> edges :
-//                vertexMap.values()) {
-//            edgeList.addAll(edges);
-//        }
+
+        // algorithm works if we loop over all the edges but checking only the bottleneck nodes, which are the
+        // ones with least residual capacity, is more efficient, especially .
         if (bottlenecks == null) return;
         for (Edge edge :
                 bottlenecks) {
-            edgeList.add(edge);
-        }
-        for (Edge edge :
-                edgeList) {
             boolean startToBottleneck = breadthFirstSearch(start, (T) edge.getSource());
             Edge bottleneck1 = findBottleneckEdge(parent, start, (T) edge.getSource());
 
             boolean bottleneckToEnd = breadthFirstSearch((T) edge.getDest(), dest);
             Edge bottleneck2 = findBottleneckEdge(parent, (T) edge.getDest(), dest);
-
             if (!edge.hasSpace() && bottleneckToEnd && startToBottleneck) {
+                System.out.println(parent);
                 int neededIncrement = -1;
                 if (bottleneck1 != null && bottleneck2 == null) {
                     neededIncrement = bottleneck1.getResidualCap();
@@ -195,6 +187,8 @@ public class Graph<T> {
                 } else if (bottleneck1 != null && bottleneck2 != null) {
                     neededIncrement = Math.min(bottleneck1.getResidualCap(), bottleneck2.getResidualCap());
                 }
+                // if the neededIncrement is -1, this means that that edge can be incremented infinitely and the max
+                // flow will rise.
                 System.out.println("source: " + edge.getSource() + " dest: " + edge.getDest() + " increment: " + neededIncrement);
             }
         }
