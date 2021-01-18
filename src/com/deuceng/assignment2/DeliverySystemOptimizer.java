@@ -5,8 +5,6 @@ import java.util.Scanner;
 
 public class DeliverySystemOptimizer {
     private Graph g;
-    private String src = "A";
-    private String dest = "C";
 
     public DeliverySystemOptimizer(Graph g) {
         this.g = g;
@@ -16,6 +14,7 @@ public class DeliverySystemOptimizer {
         this.g = createGraphFromEdges(filePath);
     }
 
+
     public void run() {
         if (g == null) throw new NullPointerException("graph should not be null");
 
@@ -24,16 +23,18 @@ public class DeliverySystemOptimizer {
         Scanner scn = new Scanner(System.in);
         while (true) {
             // i choose to not transform letter case, because vertex "A" and vertex "a" is different.
-            System.out.println("Enter the first vertex: (-1 to quit.)");
+            System.out.println("Enter the first vertex: (case sensitive)(-1 to quit.)");
             String firstVertex = scn.nextLine();
             if (firstVertex.equals("-1")) break;
 
-            System.out.println("Enter the second vertex: (-1 to quit.)");
+            System.out.println("Enter the second vertex: (case sensitive)(-1 to quit.)");
             String secondVertex = scn.nextLine();
             if (secondVertex.equals("-1")) break;
 
             System.out.println("Maximum flow is: " + g.findMaxFlow(firstVertex, secondVertex));
             g.printBottlenecksAndAmountOfIncrement(firstVertex, secondVertex);
+
+            System.out.println("------------------------------------------------------");
 
         }
     }

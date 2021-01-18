@@ -79,6 +79,8 @@ public class Edge<T> {
         return "Edge{" +
                 "source=" + source +
                 ", dest=" + dest +
+                ", residual=" + this.getResidualCap() +
                 '}';
     }
+
 }
